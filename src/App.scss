@@ -1,7 +1,12 @@
-$base-color: #61dafb;
+@use "./basecolor" as bc;
+
+html,
+body {
+  min-width: 1024px;
+}
 
 .App {
-  text-align: center;
+  text-align: left;
 }
 
 .App-logo {
@@ -21,13 +26,13 @@ $base-color: #61dafb;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-left: 5vw;
-  padding-right: 5vw;
-  padding-bottom: 5vh;
+  padding-left: 4vw;
+  padding-right: 4vw;
+  padding-bottom: 4vh;
 }
 
 .App-link {
-  color: $base-color;
+  color: bc.$bg-color;
 }
 
 .logo-jubelio {
@@ -44,7 +49,7 @@ $base-color: #61dafb;
 p {
   font-family: "Nunito Sans", sans-serif;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 400;
   color: #163a50;
 }
 
@@ -53,9 +58,21 @@ p {
   justify-content: center;
   padding-bottom: 37px;
   p {
-    font-weight: 400;
+    width: 639px;
+    height: 19px;
+    left: 392px;
+    top: 110px;
+
+    font-family: "Nunito Sans", sans-serif !important;
     font-style: normal;
-    color: #163a50;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+    line-height: 19px !important;
+    /* identical to box height */
+
+    display: flex;
+    align-items: center;
+    text-align: center;
   }
 }
 
@@ -82,4 +99,28 @@ p {
   to {
     transform: rotate(360deg);
   }
+}
+
+.footer-container {
+  display: flex;
+  margin-top: 5px;
+  justify-content: space-between;
+}
+
+.contact {
+  align-items: center;
+}
+.item-footer {
+  display: flex;
+  align-items: center;
+  margin-right: 60px;
+}
+
+.button-container {
+  position: relative;
+}
+
+.requiredField::after {
+  content: "*";
+  color: #df4d4d;
 }

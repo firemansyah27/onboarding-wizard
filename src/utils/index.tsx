@@ -1,3 +1,3 @@
 import { apiDelete, apiGet, apiPost, apiPut } from "./axios";
-
-export { apiDelete, apiGet, apiPost, apiPut };
+import { concatAdressValue } from "./utils";
+export { apiDelete, apiGet, apiPost, apiPut, concatAdressValue };

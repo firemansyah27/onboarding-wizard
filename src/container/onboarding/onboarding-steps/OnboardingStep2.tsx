@@ -1,6 +1,10 @@
 import React from "react";
 
-const OnboardingStep2: React.FunctionComponent = () => {
+interface Props {
+  submitRef2?: React.LegacyRef<HTMLButtonElement> | undefined;
+}
+
+const OnboardingStep2: React.FunctionComponent<Props> = ({ submitRef2 }) => {
   return <p>Step 2</p>;
 };
 

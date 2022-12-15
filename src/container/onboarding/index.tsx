@@ -1,1 +1,3 @@
-export { OnboardingContentContainer as default } from "./OnboardingContentContainer";
+import OnboardingContentContainer from "./OnboardingContentContainer";
+
+export { OnboardingContentContainer as default };

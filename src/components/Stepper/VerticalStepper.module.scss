@@ -1,3 +1,9 @@
 .stepperLabel {
   font-weight: 700 !important;
 }
+
+.stepConnector {
+  .MuiStepConnector-lineVertical {
+    // min-height: 36;
+  }
+}

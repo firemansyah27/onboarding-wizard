@@ -5,7 +5,7 @@ interface ObjectType {
 }
 
 export async function apiPost(url: string, data: ObjectType) {
-  let config = {
+  const config = {
     method: "POST",
     url: url,
     data: data,
@@ -35,10 +35,10 @@ export async function apiGet(
   username: string = "",
   password: string = ""
 ) {
-  var request = null;
+  let request = null;
   try {
-    let headers = {};
-    let config: AxiosRequestConfig<any> = {
+    const headers = {};
+    const config: AxiosRequestConfig<any> = {
       method: "GET",
       url,
       headers,
@@ -68,12 +68,12 @@ export async function apiGet(
 }
 
 export async function apiPut(url: string, data: ObjectType) {
-  var request = null;
+  let request = null;
   try {
-    let headers = {
+    const headers = {
       "Content-Type": "application/json",
     };
-    let config: AxiosRequestConfig<any> = {
+    const config: AxiosRequestConfig<any> = {
       headers,
     };
 
@@ -99,7 +99,7 @@ export async function apiPut(url: string, data: ObjectType) {
 }
 
 export async function apiDelete(url: string) {
-  var request = null;
+  let request = null;
   try {
     request = await axios
       .delete(url)

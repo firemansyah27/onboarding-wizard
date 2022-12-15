@@ -1,6 +1,6 @@
 import React from "react";
 import Box from "@mui/material/Box";
-import Stepper from "@mui/material/Stepper";
+import Stepper, { Orientation } from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepConnector from "@mui/material/StepConnector";
 import StepLabel from "@mui/material/StepLabel";
@@ -46,34 +46,30 @@ const steps = [
   },
 ];
 
-const VerticalStepper: React.FunctionComponent = () => {
-  const [activeStep, setActiveStep] = React.useState(0);
+interface Props {
+  activeStep: number;
+  orientation?: Orientation;
+}
 
-  //   const handleNext = () => {
-  //     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  //   };
-
-  //   const handleBack = () => {
-  //     setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  //   };
-
-  //   const handleReset = () => {
-  //     setActiveStep(0);
-  //   };
-
+const VerticalStepper: React.FunctionComponent<Props> = ({
+  activeStep,
+  orientation,
+}) => {
   const getLabelColor = (index: number) => {
-    if (index === activeStep) {
+    if (index <= activeStep) {
       return "text.secondary";
     }
     return "text.disabled";
   };
 
   return (
-    <Box sx={{ boxShadow: 3, borderRadius: 3, bgcolor: "#FFFFFF", p: 3 }}>
+    <Box
+      sx={{ boxShadow: 3, borderRadius: 3, bgcolor: "#FFFFFF", p: 3, pb: 4 }}
+    >
       <Stepper
         activeStep={activeStep}
         connector={<StepConnector sx={{ ml: 1.7 }} />}
-        orientation="vertical"
+        orientation={orientation}
       >
         {steps.map((step, index) => (
           <Step key={step.label}>
