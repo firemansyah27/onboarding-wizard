@@ -1,25 +1,50 @@
-interface Adress {
-  address: string;
-  district: string;
-  city: string;
-  state: string;
-  postcode: string;
-  country: string;
+interface ProfileData {
+  company_name: string | null;
+  website: string | null;
+  npwp: string | null;
+  address: string | null;
+  district: string | null;
+  city: string | null;
+  state: string | null;
+  postcode: string | null;
+  country: string | null;
+  contact_person: string | null;
+  email: string | null;
+  phone1: string | null;
+  phone2: string | null;
+  fax: string | null;
+  jne_loyalty_card: string | null;
+  logo_url: string | null;
 }
 
-type TupleUnion<U extends string, R extends string[] = []> = {
-  [S in U]: Exclude<U, S> extends never
-    ? [...R, S]
-    : TupleUnion<Exclude<U, S>, [...R, S]>;
-}[U] &
-  string[];
-
-type keysType = TupleUnion<keyof Adress>;
-
-export const concatAdressValue = (keys: keysType, obj: Adress): string => {
+export const concatAdressValue = (obj: ProfileData): string => {
   let result = "";
-  keys.forEach((x) => {
-    result += obj[x];
-  });
+  const addressKeys = [
+    "address",
+    "district",
+    "city",
+    "state",
+    "postcode",
+    "country",
+  ];
+  for (const [key, value] of Object.entries(obj)) {
+    if (addressKeys.includes(key) && value != "") {
+      if (key == "address") {
+        result += value;
+      } else {
+        result += `, ${value}`;
+      }
+    }
+  }
   return result;
+};
+
+export const convertNullToEmptyString = (data: {
+  [key: string]: string | null;
+}) => {
+  return JSON.parse(
+    JSON.stringify(data, function (key, value) {
+      return value === null || value === "default" ? "" : value;
+    })
+  );
 };

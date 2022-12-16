@@ -61,6 +61,11 @@
   color: #163a50;
 }
 
+.inputLabelPopup {
+  @extend .inputLabel;
+  font-weight: 600 !important;
+}
+
 .inputLabelSecondary {
   @extend .inputLabel;
   font-weight: 600 !important;
@@ -157,4 +162,12 @@
   -moz-border-radius: 8px;
   -ms-border-radius: 8px;
   -o-border-radius: 8px;
+}
+
+.titleAdress {
+  font-family: "Nunito Sans", sans-serif !important;
+  font-style: normal;
+  font-weight: 700 !important;
+  font-size: 30px !important;
+  color: #163a50 !important;
 }

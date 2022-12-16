@@ -1,7 +1,7 @@
 import React, { ReactElement } from "react";
 import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
-import Dialog from "@mui/material/Dialog";
+import Dialog, { DialogProps } from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
@@ -50,32 +50,28 @@ const BootstrapDialogTitle: React.FunctionComponent<DialogTitleProps> = (
   );
 };
 
-export interface DialogProps {
-  title: ReactElement;
+export interface CustomDialogProps extends DialogProps {
+  titleElement: ReactElement;
   content: ReactElement;
   actionContent: ReactElement;
-  open: boolean;
   onClose: () => void;
 }
 
-const CustomDialogs: React.FunctionComponent<DialogProps> = ({
-  title,
-  open,
-  content,
-  actionContent,
-  onClose,
-}) => {
+const CustomDialogs: React.FunctionComponent<CustomDialogProps> = (props) => {
+  const { titleElement, open, content, actionContent, onClose, ...properties } =
+    props;
   return (
     <div>
       <BootstrapDialog
+        {...properties}
         onClose={onClose}
         aria-labelledby="customized-dialog-title"
         open={open}
         fullWidth
-        maxWidth="sm"
+        maxWidth="md"
       >
         <BootstrapDialogTitle id="customized-dialog-title" onClose={onClose}>
-          {title}
+          {titleElement}
         </BootstrapDialogTitle>
         <DialogContent dividers>{content}</DialogContent>
         <DialogActions>{actionContent}</DialogActions>

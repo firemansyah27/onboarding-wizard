@@ -1,4 +1,10 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  ChangeEvent,
+  useRef,
+} from "react";
 import {
   Box,
   FormControl,
@@ -12,6 +18,7 @@ import {
   Radio,
   Button,
   TextField,
+  Autocomplete,
 } from "@mui/material";
 import styles from "./OnboardingStep1.module.scss";
 import Divider from "@mui/material/Divider";
@@ -24,7 +31,9 @@ import { useFormik } from "formik";
 import StoreContext from "../../../stores";
 import { observer } from "mobx-react";
 import * as yup from "yup";
-import { CollectionsOutlined } from "@mui/icons-material";
+import { OutdoorGrill } from "@mui/icons-material";
+
+type AccountSetting = "0" | "1" | "2";
 
 interface Props {
   submitRef1?: React.LegacyRef<HTMLButtonElement> | undefined;
@@ -36,23 +45,30 @@ interface CompanyData {
   npwp: string | null;
 }
 
+interface ProvincesData {
+  province_id: string;
+  name: string;
+}
+
 const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
-  const [value, setValue] = useState("female");
+  const [stateValue, setStateValue] = useState<ProvincesData>({
+    name: "",
+    province_id: "",
+  });
   const [open, setOpen] = useState(false);
-  const [address, setAddress] = useState("Jl asdf. asdfj. adfjkl");
   const { onboardingStore } = useContext(StoreContext);
+  const uploadButtonRef = useRef<any>(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      console.log(onboardingStore.profileData);
-      console.log("trigger get data");
-      onboardingStore.getProfileData();
-      console.log(onboardingStore.profileData);
-    }, 3000);
+    onboardingStore.getProfileData();
   }, []);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue((event.target as HTMLInputElement).value);
+  const handleChangeAccounting = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    onboardingStore.setAccountingSetting(
+      (event.target as HTMLInputElement).value as AccountSetting
+    );
   };
 
   const handleOnClose = () => {
@@ -63,31 +79,57 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
     setOpen(true);
   };
 
-  const initialCompanyData = (): CompanyData => {
-    const profileData = onboardingStore.profileData;
-    return {
-      company_name: profileData.company_name,
-      website: profileData.website,
-      npwp: profileData.npwp,
-    };
-  };
-
-  // const initialAddressData = () => {};
-
-  const validationSchema = yup.object({
+  const validationSchemaProfile = yup.object({
     company_name: yup.string().required(),
     website: yup.string(),
-    npwp: yup.string().required(),
+    npwp: yup.string(),
   });
 
-  const formik = useFormik({
+  const formikProfile = useFormik({
     enableReinitialize: true,
     initialValues: onboardingStore.profileData,
-    validationSchema: validationSchema,
+    validationSchema: validationSchemaProfile,
     onSubmit: (values) => {
       alert(JSON.stringify(values, null, 2));
     },
   });
+
+  const validationSchemaAddress = yup.object({
+    address: yup.string().required(),
+    district: yup.string().required(),
+    city: yup.string().required(),
+    state: yup.string().required(),
+    postcode: yup.string().required(),
+    country: yup.string().required(),
+  });
+
+  const formikAddress = useFormik({
+    enableReinitialize: true,
+    initialValues: onboardingStore.profileData,
+    validationSchema: validationSchemaAddress,
+    onSubmit: (values) => {
+      alert(JSON.stringify(values));
+      onboardingStore.onSubmitFormAddress(values);
+      onboardingStore.setAdress(values);
+      handleOnClose();
+    },
+  });
+
+  const provinces = () => {
+    return onboardingStore.provincesData.map((item) => {
+      return item["name"];
+    });
+  };
+  const cities = () => {
+    return onboardingStore.citiesData.map((item) => {
+      return item["name"];
+    });
+  };
+  const districts = () => {
+    return onboardingStore.districtsData.map((item) => {
+      return item["name"];
+    });
+  };
 
   return (
     <Box className={styles.step1Container}>
@@ -102,7 +144,7 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
       </Typography>
       <Grid className={styles.formContainer} container spacing={2}>
         <Grid item xs={9}>
-          <form onSubmit={formik.handleSubmit} noValidate>
+          <form onSubmit={formikProfile.handleSubmit} noValidate>
             <InputGrid
               label={
                 <Typography
@@ -118,11 +160,17 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                   name="company_name"
                   placeholder={"Masukkan nama perusahaan"}
                   aria-describedby="company-name-text"
-                  value={formik.values.company_name}
-                  onChange={formik.handleChange}
+                  value={formikProfile.values.company_name}
+                  onChange={formikProfile.handleChange}
+                  onBlur={() =>
+                    onboardingStore.updateProfileData(
+                      "company_name",
+                      formikProfile.values.company_name
+                    )
+                  }
                   error={
-                    formik.touched.company_name &&
-                    Boolean(formik.errors.company_name)
+                    formikProfile.touched.company_name &&
+                    Boolean(formikProfile.errors.company_name)
                   }
                 />
               }
@@ -138,11 +186,8 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                   name="website"
                   placeholder={"Masukkan situs website"}
                   aria-describedby="website-text"
-                  value={formik.values.website}
-                  onChange={formik.handleChange}
-                  error={
-                    formik.touched.website && Boolean(formik.errors.website)
-                  }
+                  value={formikProfile.values.website}
+                  onChange={formikProfile.handleChange}
                 />
               }
             />
@@ -157,9 +202,8 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                   name="npwp"
                   placeholder={"Masukkan no. NPWP"}
                   aria-describedby="npwp-text"
-                  value={formik.values.npwp}
-                  onChange={formik.handleChange}
-                  error={formik.touched.npwp && Boolean(formik.errors.npwp)}
+                  value={formikProfile.values.npwp}
+                  onChange={formikProfile.handleChange}
                 />
               }
             />
@@ -202,27 +246,45 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
         </Grid>
         <Grid item xs={3} className={styles.uploadImageContainer}>
           <Box className={styles.uploadImage}>
-            <AddAPhotoIcon sx={{ color: "#D3D3D3", fontSize: 40 }} />
-            <Typography className={styles.uploadImageTitle}>
-              Logo Perusahaan
-            </Typography>
             <input
               type="file"
-              accept="image/*"
+              accept="image/png, image/jpeg"
               style={{ display: "none" }}
               id="contained-button-file"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                if (!event.target.files) return;
+                onboardingStore.setImage(event.target.files[0]);
+              }}
             />
-            <label htmlFor="contained-button-file">
-              <Button
-                className={styles.uploadButton}
-                variant="contained"
-                color="primary"
-                component="span"
-                sx={{ textTransform: "none" }}
-              >
-                Upload
-              </Button>
-            </label>
+            {onboardingStore.imageUrl != "" &&
+            onboardingStore.image.length > 0 ? (
+              <label htmlFor="contained-button-file">
+                <img
+                  src={onboardingStore.imageUrl}
+                  alt={onboardingStore.image[0]?.name}
+                  style={{ width: "100%" }}
+                />
+              </label>
+            ) : (
+              <>
+                <AddAPhotoIcon sx={{ color: "#D3D3D3", fontSize: 40 }} />
+                <Typography className={styles.uploadImageTitle}>
+                  Logo Perusahaan
+                </Typography>
+                <label htmlFor="contained-button-file">
+                  <Button
+                    ref={uploadButtonRef}
+                    className={styles.uploadButton}
+                    variant="contained"
+                    color="primary"
+                    component="span"
+                    sx={{ textTransform: "none" }}
+                  >
+                    Upload
+                  </Button>
+                </label>
+              </>
+            )}
           </Box>
           <Typography className={styles.uploadImageRule}>
             *Maksimal 1mb. Format harus jpg/png.
@@ -237,11 +299,11 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
         <RadioGroup
           aria-labelledby="controlled-radio-buttons-group"
           name="controlled-radio-buttons-group"
-          value={value}
-          onChange={handleChange}
+          value={onboardingStore.accountingSetting}
+          onChange={handleChangeAccounting}
         >
           <FormControlLabel
-            value={0}
+            value={"0"}
             control={<Radio />}
             label={
               <Typography className={`${styles.radioLabel}`}>
@@ -255,7 +317,7 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
             akunting lainnya.
           </Typography>
           <FormControlLabel
-            value={2}
+            value={"1"}
             control={<Radio />}
             label={
               <Typography className={`${styles.radioLabel}`}>
@@ -268,7 +330,7 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
             omset dan keuntungan kotor.
           </Typography>
           <FormControlLabel
-            value={3}
+            value={"2"}
             control={<Radio />}
             label={
               <Typography className={`${styles.radioLabel}`}>
@@ -282,96 +344,256 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
           </Typography>
         </RadioGroup>
       </FormControl>
-      <CustomDialogs
-        open={open}
-        title={<Typography>Tambah Alamat</Typography>}
-        onClose={handleOnClose}
-        content={
-          <Box>
-            <InputGrid
-              label={
-                <Typography
-                  className={`${styles.inputLabel} ${styles.requiredField}`}
-                >
-                  Nama Perusahaan
-                </Typography>
-              }
-              input={
-                <TextField
-                  inputProps={{ className: styles.inputField }}
-                  id="my-input2"
-                  placeholder={"Masukan Nama 1"}
-                  aria-describedby="my-helper-text"
-                  required
-                />
-              }
+      <form onSubmit={formikAddress.handleSubmit} noValidate>
+        <CustomDialogs
+          disablePortal
+          open={open}
+          titleElement={
+            <Typography className={styles.titleAdress}>
+              Tambah Alamat
+            </Typography>
+          }
+          onClose={handleOnClose}
+          content={
+            <Box sx={{ px: 3 }}>
+              <InputGrid
+                label={
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      height: "100%",
+                      pt: 2,
+                    }}
+                  >
+                    <Typography
+                      className={`${styles.inputLabelPopup} ${styles.requiredField}`}
+                      sx={{ display: "flex", justifyContent: "flex-start" }}
+                    >
+                      Alamat Lengkap
+                    </Typography>
+                  </Box>
+                }
+                input={
+                  <TextField
+                    inputProps={{ className: styles.inputField }}
+                    id="address"
+                    name="address"
+                    placeholder={"Jalan, No, Blok, dll"}
+                    aria-describedby="address-text"
+                    value={formikAddress.values.address}
+                    onChange={formikAddress.handleChange}
+                    multiline
+                    minRows={4}
+                    error={
+                      formikAddress.touched.address &&
+                      Boolean(formikAddress.errors.address)
+                    }
+                  />
+                }
+              />
+              <InputGrid
+                label={
+                  <Typography
+                    className={`${styles.inputLabelPopup} ${styles.requiredField}`}
+                  >
+                    Provinsi
+                  </Typography>
+                }
+                input={
+                  <Autocomplete
+                    id="state-autocomplete"
+                    value={
+                      formikAddress.values.state != ""
+                        ? formikAddress.values.state
+                        : null
+                    }
+                    aria-describedby="state-text"
+                    onChange={(e, v) => {
+                      formikAddress.setFieldValue("state", v || "");
+                    }}
+                    disablePortal
+                    options={provinces()}
+                    onFocus={() => onboardingStore.getProvincesData()}
+                    renderOption={(props, option) => (
+                      <li {...props}>{option}</li>
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        name="state"
+                        placeholder={"Pilih Provinsi"}
+                        value={formikAddress.values.state}
+                        error={
+                          formikAddress.touched.state &&
+                          Boolean(formikAddress.errors.state)
+                        }
+                        {...params}
+                        inputProps={{
+                          ...params.inputProps,
+                          style: {
+                            padding: 0,
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                }
+              />
+              <InputGrid
+                label={
+                  <Typography
+                    className={`${styles.inputLabelPopup} ${styles.requiredField}`}
+                  >
+                    Kota / Kab
+                  </Typography>
+                }
+                input={
+                  <Autocomplete
+                    id="city-autocomplete"
+                    value={
+                      formikAddress.values.city != ""
+                        ? formikAddress.values.city
+                        : null
+                    }
+                    aria-describedby="city-text"
+                    onChange={(e, v) => {
+                      formikAddress.setFieldValue("city", v || "");
+                    }}
+                    disablePortal
+                    defaultChecked={false}
+                    options={cities()}
+                    onFocus={() => onboardingStore.getCitiesData()}
+                    renderOption={(props, option) => (
+                      <li {...props}>{option}</li>
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        name="city"
+                        placeholder={"Pilih Kota/Kabupaten"}
+                        error={
+                          formikAddress.touched.city &&
+                          Boolean(formikAddress.errors.city)
+                        }
+                        {...params}
+                        inputProps={{
+                          ...params.inputProps,
+                          style: {
+                            padding: 0,
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                }
+              />
+              <InputGrid
+                label={
+                  <Typography
+                    className={`${styles.inputLabelPopup} ${styles.requiredField}`}
+                  >
+                    Kecamatan
+                  </Typography>
+                }
+                input={
+                  <Autocomplete
+                    id="district-autocomplete"
+                    value={
+                      formikAddress.values.district != ""
+                        ? formikAddress.values.district
+                        : null
+                    }
+                    aria-describedby="district-text"
+                    onChange={(e, v) => {
+                      formikAddress.setFieldValue("district", v || "");
+                    }}
+                    disablePortal
+                    options={districts()}
+                    onFocus={() => onboardingStore.getDistrictsData()}
+                    renderOption={(props, option) => (
+                      <li {...props}>{option}</li>
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        name="district"
+                        placeholder={"Pilih Kecamatan"}
+                        error={
+                          formikAddress.touched.district &&
+                          Boolean(formikAddress.errors.district)
+                        }
+                        {...params}
+                        inputProps={{
+                          ...params.inputProps,
+                          style: {
+                            padding: 0,
+                          },
+                        }}
+                      />
+                    )}
+                  />
+                }
+              />
+              <InputGrid
+                label={
+                  <Typography
+                    className={`${styles.inputLabelPopup} ${styles.requiredField}`}
+                  >
+                    Kode Pos
+                  </Typography>
+                }
+                input={
+                  <TextField
+                    inputProps={{ className: styles.inputField }}
+                    id="postcode"
+                    name="postcode"
+                    type="tel"
+                    placeholder={"1234"}
+                    aria-describedby="postcode-text"
+                    value={formikAddress.values.postcode}
+                    onChange={formikAddress.handleChange}
+                    error={
+                      formikAddress.touched.postcode &&
+                      Boolean(formikAddress.errors.postcode)
+                    }
+                  />
+                }
+              />
+              <InputGrid
+                label={
+                  <Typography
+                    className={`${styles.inputLabelPopup} ${styles.requiredField}`}
+                  >
+                    Negara
+                  </Typography>
+                }
+                input={
+                  <TextField
+                    inputProps={{ className: styles.inputField }}
+                    id="country"
+                    name="country"
+                    placeholder={"Masukan Nama Negara"}
+                    aria-describedby="country-text"
+                    value={formikAddress.values.country}
+                    onChange={formikAddress.handleChange}
+                    error={
+                      formikAddress.touched.country &&
+                      Boolean(formikAddress.errors.country)
+                    }
+                  />
+                }
+              />
+            </Box>
+          }
+          actionContent={
+            <CustomButton
+              className={styles.modalActionButton}
+              variant={"contained"}
+              name={"Simpan"}
+              type="submit"
+              startIcon={<SaveIcon />}
             />
-            <InputGrid
-              label={
-                <Typography
-                  className={`${styles.inputLabel} ${styles.requiredField}`}
-                >
-                  Nama Perusahaan
-                </Typography>
-              }
-              input={
-                <TextField
-                  inputProps={{ className: styles.inputField }}
-                  id="my-input2"
-                  placeholder={"Masukan Nama 1"}
-                  aria-describedby="my-helper-text"
-                  required
-                />
-              }
-            />
-            <InputGrid
-              label={
-                <Typography
-                  className={`${styles.inputLabel} ${styles.requiredField}`}
-                >
-                  Nama Perusahaan
-                </Typography>
-              }
-              input={
-                <TextField
-                  inputProps={{ className: styles.inputField }}
-                  id="my-input2"
-                  placeholder={"Masukan Nama 1"}
-                  aria-describedby="my-helper-text"
-                  required
-                />
-              }
-            />
-            <InputGrid
-              label={
-                <Typography
-                  className={`${styles.inputLabel} ${styles.requiredField}`}
-                >
-                  Nama Perusahaan
-                </Typography>
-              }
-              input={
-                <TextField
-                  inputProps={{ className: styles.inputField }}
-                  id="my-input2"
-                  placeholder={"Masukan Nama 1"}
-                  aria-describedby="my-helper-text"
-                  required
-                />
-              }
-            />
-          </Box>
-        }
-        actionContent={
-          <CustomButton
-            className={styles.modalActionButton}
-            variant={"contained"}
-            name={"Simpan"}
-            onClick={handleOnClose}
-            startIcon={<SaveIcon />}
-          />
-        }
-      />
+          }
+        />
+      </form>
     </Box>
   );
 };

@@ -2,15 +2,17 @@ import React from "react";
 import Button, { ButtonProps } from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
-export const CustomButton: React.FunctionComponent<ButtonProps> = ({
-  id,
-  name,
-  variant,
-  className,
-  onClick,
-  startIcon,
-  endIcon,
-}) => {
+export const CustomButton: React.FunctionComponent<ButtonProps> = (props) => {
+  const {
+    id,
+    name,
+    variant,
+    className,
+    onClick,
+    startIcon,
+    endIcon,
+    ...properties
+  } = props;
   return (
     <Button
       className={className}
@@ -20,6 +22,7 @@ export const CustomButton: React.FunctionComponent<ButtonProps> = ({
       endIcon={endIcon}
       onClick={onClick}
       id={id}
+      {...properties}
     >
       {name}
     </Button>

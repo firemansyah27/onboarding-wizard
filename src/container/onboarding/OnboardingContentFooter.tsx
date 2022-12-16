@@ -24,11 +24,11 @@ const OnboardingContentFooter: React.FunctionComponent<Props> = ({
   const { onboardingStore } = useContext(StoreContext);
 
   const handleClickNext = (event: React.MouseEvent<HTMLButtonElement>) => {
-    console.log("masuk sini");
-    // showToolTip(event);
-    console.log(submitRef?.current);
+    if (isShowTooltips()) {
+      showToolTip(event);
+      return;
+    }
     submitRef?.current?.click();
-    // onboardingStore.nextStep();
   };
 
   const handleClickPrevious = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -38,7 +38,45 @@ const OnboardingContentFooter: React.FunctionComponent<Props> = ({
 
   const showToolTip = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
-    console.log("trigger-tooltip");
+  };
+
+  const isShowTooltips = (): boolean => {
+    let showToolTip = false;
+    switch (onboardingStore.activeStep) {
+      case 0:
+        showToolTip = isShowTooltipStep1();
+        break;
+
+      default:
+        break;
+    }
+    return showToolTip;
+  };
+
+  const isShowTooltipStep1 = (): boolean => {
+    let showToolTip = false;
+    const profileData = onboardingStore.profileData;
+    const image = onboardingStore.image;
+    const imageUrl = onboardingStore.imageUrl;
+    const listTocheck = [
+      "company_name",
+      "address",
+      "district",
+      "city",
+      "state",
+      "postcode",
+      "country",
+    ];
+
+    for (const [key, value] of Object.entries(profileData)) {
+      if (listTocheck.includes(key)) {
+        if (value === "") {
+          showToolTip = true;
+        }
+      }
+    }
+
+    return showToolTip || !(image.length > 0 && imageUrl != "");
   };
 
   const handleClose = () => {
@@ -74,17 +112,21 @@ const OnboardingContentFooter: React.FunctionComponent<Props> = ({
         </Box>
         <Box className={styles.buttonContainer}>
           <Popover childNode={anchorEl} onClose={handleClose} />
+          {onboardingStore.activeStep > 0 && (
+            <Button
+              className={styles.buttonPrevious}
+              variant={"contained"}
+              name={"Sebelumnya"}
+              onClick={handleClickPrevious}
+              startIcon={
+                <KeyboardArrowLeftIcon className={styles.buttonPreviousArrow} />
+              }
+            />
+          )}
           <Button
-            className={styles.buttonPrevious}
-            variant={"contained"}
-            name={"Sebelumnya"}
-            onClick={handleClickPrevious}
-            startIcon={
-              <KeyboardArrowLeftIcon className={styles.buttonPreviousArrow} />
+            className={
+              isShowTooltips() ? styles.buttonNextDisabled : styles.buttonNext
             }
-          />
-          <Button
-            className={styles.buttonNext}
             variant={"contained"}
             name={"Selanjutnya"}
             onClick={handleClickNext}
