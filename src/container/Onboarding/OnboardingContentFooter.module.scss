@@ -1,0 +1,41 @@
+@use "../../basecolor" as bc;
+
+.buttonContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.buttonPrevious {
+    margin-right: 5px !important;
+    background-color: #ffffff !important;
+    color: bc.$primary !important;
+}
+
+.buttonPreviousArrow {
+    color: bc.$primary !important;
+}
+
+.buttonNext {
+    margin-left: 5px !important;
+}
+
+.buttonNextDisabled {
+    @extend .buttonNext;
+    background-color: bc.$dark-disabled !important;
+}
+
+.whatsappLogo,
+.youtubeLogo {
+    height: 30px;
+}
+
+.footerText {
+    font-size: 0.75rem !important;
+}
+
+@media (max-width: 1048px) {
+    .footerText {
+        font-size: 0.6rem !important;
+    }
+}

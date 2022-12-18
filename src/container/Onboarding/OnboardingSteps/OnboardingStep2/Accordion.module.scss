@@ -1,0 +1,43 @@
+@use "../../../../basecolor" as bc;
+
+.connectButton {
+    min-height: 35px;
+    top: -6px !important;
+    background-color: #ffffff !important;
+    color: bc.$primary !important;
+    border: 1px solid #d4d5d6 !important;
+    border-radius: 8px !important;
+    -webkit-border-radius: 8px !important;
+    -moz-border-radius: 8px !important;
+    -ms-border-radius: 8px !important;
+    -o-border-radius: 8px !important;
+}
+
+.accordion {
+    box-shadow: none !important;
+    > div:nth-child(1) {
+        min-height: 67px !important;
+        height: 2vw !important;
+        border: 1px solid #ebe9e9 !important;
+        border-radius: 8px !important;
+        box-shadow: 0px 2px 10px rgba(228, 226, 226, 0.36);
+        > div {
+            justify-content: space-between;
+            height: 1.5vw !important;
+            min-height: 25px !important;
+        }
+    }
+    > div:nth-child(2) {
+        border: 1px solid #ebe9e9 !important;
+        border-radius: 8px !important;
+        margin-top: 10px !important;
+        box-shadow: 0px 2px 10px rgba(228, 226, 226, 0.36);
+    }
+}
+
+.accordionDetail {
+    padding: 0px !important;
+    > div {
+        overflow-x: hidden !important;
+    }
+}
