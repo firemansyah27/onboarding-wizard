@@ -1,5 +1,4 @@
 import React, { ReactElement } from "react";
-import Button from "@mui/material/Button";
 import { styled } from "@mui/material/styles";
 import Dialog, { DialogProps } from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -7,77 +6,90 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import Typography from "@mui/material/Typography";
+import styles from "./Dialog.module.scss";
+import { borderRadius } from "@mui/system";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  "& .MuiDialogContent-root": {
-    padding: theme.spacing(2),
-  },
-  "& .MuiDialogActions-root": {
-    padding: theme.spacing(1),
-  },
+    "& .MuiDialogContent-root": {
+        padding: theme.spacing(2),
+    },
+    "& .MuiDialogActions-root": {
+        padding: theme.spacing(1),
+    },
 }));
 
 export interface DialogTitleProps {
-  id: string;
-  children?: React.ReactNode;
-  onClose: () => void;
+    id: string;
+    children?: React.ReactNode;
+    onClose: () => void;
 }
 
 const BootstrapDialogTitle: React.FunctionComponent<DialogTitleProps> = (
-  props
+    props
 ) => {
-  const { children, onClose, ...other } = props;
+    const { children, onClose, ...other } = props;
 
-  return (
-    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
-      {children}
-      {onClose ? (
-        <IconButton
-          aria-label="close"
-          onClick={onClose}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </DialogTitle>
-  );
+    return (
+        <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+            {children}
+            {onClose ? (
+                <IconButton
+                    aria-label="close"
+                    onClick={onClose}
+                    sx={{
+                        position: "absolute",
+                        right: 8,
+                        top: 8,
+                        color: (theme) => theme.palette.grey[500],
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
+            ) : null}
+        </DialogTitle>
+    );
 };
 
 export interface CustomDialogProps extends DialogProps {
-  titleElement: ReactElement;
-  content: ReactElement;
-  actionContent: ReactElement;
-  onClose: () => void;
+    titleElement: ReactElement | undefined;
+    content: ReactElement | undefined;
+    actionContent: ReactElement | undefined;
+    onClose: () => void;
 }
 
 const CustomDialogs: React.FunctionComponent<CustomDialogProps> = (props) => {
-  const { titleElement, open, content, actionContent, onClose, ...properties } =
-    props;
-  return (
-    <div>
-      <BootstrapDialog
-        {...properties}
-        onClose={onClose}
-        aria-labelledby="customized-dialog-title"
-        open={open}
-        fullWidth
-        maxWidth="md"
-      >
-        <BootstrapDialogTitle id="customized-dialog-title" onClose={onClose}>
-          {titleElement}
-        </BootstrapDialogTitle>
-        <DialogContent dividers>{content}</DialogContent>
-        <DialogActions>{actionContent}</DialogActions>
-      </BootstrapDialog>
-    </div>
-  );
+    const {
+        titleElement,
+        open,
+        content,
+        actionContent,
+        onClose,
+        ...properties
+    } = props;
+    return (
+        <div>
+            <BootstrapDialog
+                {...properties}
+                onClose={onClose}
+                aria-labelledby="customized-dialog-title"
+                open={open}
+                PaperProps={{
+                    style: {
+                        borderRadius: 15,
+                    },
+                }}
+            >
+                <BootstrapDialogTitle
+                    id="customized-dialog-title"
+                    onClose={onClose}
+                >
+                    {titleElement}
+                </BootstrapDialogTitle>
+                <DialogContent dividers>{content}</DialogContent>
+                <DialogActions>{actionContent}</DialogActions>
+            </BootstrapDialog>
+        </div>
+    );
 };
 
 export default CustomDialogs;

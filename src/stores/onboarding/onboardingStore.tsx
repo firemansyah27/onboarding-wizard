@@ -54,6 +54,10 @@ interface disctrictData {
     name: string;
 }
 
+interface ObjectData {
+    [key: string]: any;
+}
+
 type AccountSetting = "0" | "1" | "2";
 
 export class OnboardingStore {
@@ -66,6 +70,7 @@ export class OnboardingStore {
     accountingSetting: AccountSetting = "0";
     image: File[] = [];
     imageUrl: string = "";
+    listStore: ObjectData[] = [];
 
     constructor(profileData: ProfileData) {
         makeObservable(this, {
@@ -81,6 +86,8 @@ export class OnboardingStore {
             onSubmitFormAddress: action,
             accountingSetting: observable,
             setAccountingSetting: action,
+            listStore: observable,
+            getListStore: action,
             image: observable,
             imageUrl: observable,
             setImage: action,
@@ -466,6 +473,50 @@ export class OnboardingStore {
                 district_id: "110118",
                 city_id: "1101",
                 name: "Trumon Tengah",
+            },
+        ];
+    };
+
+    getListStore = () => {
+        this.listStore = [
+            {
+                channel_id: 131072,
+                channel_name: "Webstore",
+                store_id: 74329,
+                store_name: "codetesting.jubelio.store",
+                extra_info: {
+                    host: "https://codetesting.jubelio.store",
+                    version: "v2",
+                    isJubelioStore: false,
+                    exclude_from_update: false,
+                    is_use_custom_order_status: false,
+                },
+            },
+            {
+                channel_id: 2,
+                channel_name: "Bukalapak",
+                store_id: 743291,
+                store_name: "bukalapak test",
+                extra_info: {
+                    host: "https://codetesting.jubelio.store",
+                    version: "v2",
+                    isJubelioStore: false,
+                    exclude_from_update: false,
+                    is_use_custom_order_status: false,
+                },
+            },
+            {
+                channel_id: 64,
+                channel_name: "Shopee",
+                store_id: 743291,
+                store_name: "bukalapak test",
+                extra_info: {
+                    host: "https://codetesting.jubelio.store",
+                    version: "v2",
+                    isJubelioStore: false,
+                    exclude_from_update: false,
+                    is_use_custom_order_status: false,
+                },
             },
         ];
     };

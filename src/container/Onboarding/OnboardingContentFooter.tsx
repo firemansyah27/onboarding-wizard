@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 
 import Box from "@mui/material/Box";
+import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import Button from "../../components/Button";
 import Popover from "../../components/Popover/Popover";
@@ -101,9 +102,11 @@ const OnboardingContentFooter: React.FunctionComponent<Props> = ({
                             src={whatsappLogo}
                             alt="whatsapp"
                         />
-                        <Typography className={styles.footerText}>
-                            Butuh Bantuan?
-                        </Typography>
+                        <Link href="https://www.jubelio.com" variant="body2">
+                            <Typography className={styles.footerText}>
+                                Butuh Bantuan?
+                            </Typography>
+                        </Link>
                     </Box>
                     <Box className="item-footer">
                         <img
@@ -111,9 +114,11 @@ const OnboardingContentFooter: React.FunctionComponent<Props> = ({
                             src={youtubeLogo}
                             alt="youtube"
                         />
-                        <Typography className={styles.footerText}>
-                            Melakukan Pengaturan Awal
-                        </Typography>
+                        <Link href="https://www.jubelio.com" variant="body2">
+                            <Typography className={styles.footerText}>
+                                Melakukan Pengaturan Awal
+                            </Typography>
+                        </Link>
                     </Box>
                 </Box>
                 <Box className={styles.buttonContainer}>

@@ -53,7 +53,6 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
     });
     const [open, setOpen] = useState(false);
     const { onboardingStore } = useContext(StoreContext);
-    const uploadButtonRef = useRef<any>(null);
 
     useEffect(() => {
         onboardingStore.getProfileData();
@@ -264,7 +263,6 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                                 </Typography>
                                 <label htmlFor="contained-button-file">
                                     <Button
-                                        ref={uploadButtonRef}
                                         className={styles.uploadButton}
                                         variant="contained"
                                         color="primary"
@@ -371,6 +369,8 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                 <CustomDialogs
                     disablePortal
                     open={open}
+                    fullWidth
+                    maxWidth="md"
                     titleElement={
                         <Typography className={styles.titleAdress}>
                             Tambah Alamat

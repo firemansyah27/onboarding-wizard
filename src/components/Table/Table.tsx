@@ -6,9 +6,14 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
+import styles from "./Table.module.scss";
+
+interface Column {
+    [key: string]: string | number;
+}
 
 type Props = {
-    fields: string[];
+    fields: Column[];
     body: ReactNode;
 };
 
@@ -21,7 +26,13 @@ const CustomTable: FunctionComponent<Props> = (props) => {
                 <TableHead>
                     <TableRow>
                         {fields.map((value) => (
-                            <TableCell key={value}>{value}</TableCell>
+                            <TableCell
+                                key={value.name}
+                                className={styles.tableHead}
+                                style={{ width: value.width }}
+                            >
+                                {value.name}
+                            </TableCell>
                         ))}
                     </TableRow>
                 </TableHead>
