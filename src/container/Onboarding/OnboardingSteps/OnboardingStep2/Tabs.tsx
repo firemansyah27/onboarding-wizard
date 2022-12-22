@@ -39,7 +39,6 @@ const CustomTabs = () => {
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setValue(newValue);
     };
-    console.log(value);
 
     const indexTab1 = 0;
     const indexTab2 = 1;

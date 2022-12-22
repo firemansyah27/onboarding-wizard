@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import jubelioLogo from "./assets/jubelio.png";
 
 import "./App.scss";
@@ -9,6 +9,8 @@ import Typography from "@mui/material/Typography";
 import OnboardingContent from "./container/Onboarding";
 import StoreContext from "./stores";
 import { observer } from "mobx-react";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const theme = createTheme({
     typography: {
@@ -35,6 +37,16 @@ const theme = createTheme({
 
 function App() {
     const { onboardingStore } = useContext(StoreContext);
+    useEffect(() => {
+        const authentication = async () => {
+            // await onboardingStore.authenticateUser({
+            //     email: "rickrkop25@gmail.com",
+            //     password: "Jadipedagang27!",
+            // });
+            await onboardingStore.getCurrentStep();
+        };
+        authentication();
+    }, []);
 
     return (
         <ThemeProvider theme={theme}>
@@ -62,6 +74,15 @@ function App() {
                     </Grid>
                 </div>
             </div>
+            <Backdrop
+                sx={{
+                    color: "#fff",
+                    zIndex: (theme) => theme.zIndex.drawer + 1,
+                }}
+                open={onboardingStore.isLoading}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </ThemeProvider>
     );
 }

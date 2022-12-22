@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Typography, Box, Link, Button } from "@mui/material";
 import ShopeeFullIcon from "../../../../../assets/shopee-full.png";
 import styles from "./ShopeeDialogContent.module.scss";
+import { observer } from "mobx-react";
+import StoreContext from "../../../../../stores";
+import { observe } from "mobx";
 
 export const ShopeeDialogTitle = () => {
     return (
@@ -36,9 +39,11 @@ export const ShopeeDialogContent = () => {
     );
 };
 
-export const ShopeeDialogActionContent = () => {
+export const ShopeeDialogActionContent = observer(() => {
+    const { onboardingStore } = useContext(StoreContext);
+
     const handleOnClick = () => {
-        alert("generate link Shopee");
+        onboardingStore.generateLinkShopee();
     };
 
     return (
@@ -68,4 +73,4 @@ export const ShopeeDialogActionContent = () => {
             </Button>
         </Box>
     );
-};
+});

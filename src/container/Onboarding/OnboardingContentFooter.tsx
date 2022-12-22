@@ -35,7 +35,6 @@ const OnboardingContentFooter: React.FunctionComponent<Props> = ({
     const handleClickPrevious = (
         event: React.MouseEvent<HTMLButtonElement>
     ) => {
-        showToolTip(event);
         onboardingStore.previousStep();
     };
 
@@ -59,7 +58,6 @@ const OnboardingContentFooter: React.FunctionComponent<Props> = ({
     const isShowTooltipStep1 = (): boolean => {
         let showToolTip = false;
         const profileData = onboardingStore.profileData;
-        const image = onboardingStore.image;
         const imageUrl = onboardingStore.imageUrl;
         const listTocheck = [
             "company_name",
@@ -79,7 +77,7 @@ const OnboardingContentFooter: React.FunctionComponent<Props> = ({
             }
         }
 
-        return showToolTip || !(image.length > 0 && imageUrl != "");
+        return showToolTip || imageUrl === "";
     };
 
     const handleClose = () => {

@@ -29,7 +29,13 @@ export const WoocommerceDialogTitle = () => {
     );
 };
 
-export const WoocommerceDialogContent = () => {
+export interface ContentProps {
+    onClose: () => void;
+}
+
+export const WoocommerceDialogContent: React.FunctionComponent<
+    ContentProps
+> = ({ onClose }) => {
     const { onboardingStore } = useContext(StoreContext);
 
     const validationSchema = yup.object({
@@ -41,10 +47,17 @@ export const WoocommerceDialogContent = () => {
 
     const formik = useFormik({
         enableReinitialize: true,
-        initialValues: { host: "", key: "", secret: "", version: "v3" },
+        initialValues: {
+            host: "",
+            key: "",
+            secret: "",
+            version: "v3",
+            is_use_custom_order_status: false,
+        },
         validationSchema: validationSchema,
         onSubmit: (values) => {
-            alert(JSON.stringify(values, null, 2));
+            onClose();
+            onboardingStore.connectWoocommerce(values);
         },
     });
     return (

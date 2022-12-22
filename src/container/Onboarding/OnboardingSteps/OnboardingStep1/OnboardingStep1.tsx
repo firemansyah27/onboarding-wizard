@@ -47,16 +47,19 @@ interface ProvincesData {
 }
 
 const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
-    const [stateValue, setStateValue] = useState<ProvincesData>({
-        name: "",
-        province_id: "",
-    });
     const [open, setOpen] = useState(false);
     const { onboardingStore } = useContext(StoreContext);
 
     useEffect(() => {
-        onboardingStore.getProfileData();
+        if (needGetData()) {
+            onboardingStore.getProfileData();
+            onboardingStore.getAccountingSetting();
+        }
     }, []);
+
+    const needGetData = () => {
+        return onboardingStore.profileData.company_name === "";
+    };
 
     const handleChangeAccounting = (
         event: React.ChangeEvent<HTMLInputElement>
@@ -70,8 +73,15 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
         setOpen(false);
     };
 
-    const handleClickOpen = () => {
+    const handleClickOpen = async () => {
         setOpen(true);
+        await onboardingStore.getProvincesData();
+        await onboardingStore.getCitiesData(formikAddress.values.state || "");
+        await onboardingStore.getDistrictsData(formikAddress.values.city || "");
+    };
+
+    const handleSubmiStep1Data = async () => {
+        await onboardingStore.saveProfileData();
     };
 
     const validationSchemaProfile = yup.object({
@@ -85,7 +95,7 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
         initialValues: onboardingStore.profileData,
         validationSchema: validationSchemaProfile,
         onSubmit: (values) => {
-            alert(JSON.stringify(values, null, 2));
+            handleSubmiStep1Data();
         },
     });
 
@@ -103,7 +113,6 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
         initialValues: onboardingStore.profileData,
         validationSchema: validationSchemaAddress,
         onSubmit: (values) => {
-            alert(JSON.stringify(values));
             onboardingStore.onSubmitFormAddress(values);
             onboardingStore.setAdress(values);
             handleOnClose();
@@ -111,18 +120,19 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
     });
 
     const provinces = () => {
-        return onboardingStore.provincesData.map((item) => {
-            return item["name"];
+        const province_names = onboardingStore.provincesData.map((item) => {
+            return item.name;
         });
+        return province_names;
     };
     const cities = () => {
         return onboardingStore.citiesData.map((item) => {
-            return item["name"];
+            return item.name;
         });
     };
     const districts = () => {
         return onboardingStore.districtsData.map((item) => {
-            return item["name"];
+            return item.name;
         });
     };
 
@@ -193,6 +203,12 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                                     aria-describedby="website-text"
                                     value={formikProfile.values.website}
                                     onChange={formikProfile.handleChange}
+                                    onBlur={() =>
+                                        onboardingStore.updateProfileData(
+                                            "website",
+                                            formikProfile.values.website
+                                        )
+                                    }
                                 />
                             }
                         />
@@ -213,6 +229,12 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                                     aria-describedby="npwp-text"
                                     value={formikProfile.values.npwp}
                                     onChange={formikProfile.handleChange}
+                                    onBlur={() =>
+                                        onboardingStore.updateProfileData(
+                                            "npwp",
+                                            formikProfile.values.npwp
+                                        )
+                                    }
                                 />
                             }
                         />
@@ -237,15 +259,15 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                                 onboardingStore.setImage(event.target.files[0]);
                             }}
                         />
-                        {onboardingStore.imageUrl != "" &&
-                        onboardingStore.image.length > 0 ? (
+
+                        {onboardingStore.imageUrl != "" ? (
                             <label
                                 htmlFor="contained-button-file"
                                 style={{ height: "70%", padding: 2 }}
                             >
                                 <img
                                     src={onboardingStore.imageUrl}
-                                    alt={onboardingStore.image[0]?.name}
+                                    alt={"asdjfksfad"}
                                     style={{
                                         height: "100%",
                                         width: "100%",
@@ -444,12 +466,12 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                                                 "state",
                                                 v || ""
                                             );
+                                            onboardingStore.getCitiesData(
+                                                v || ""
+                                            );
                                         }}
                                         disablePortal
                                         options={provinces()}
-                                        onFocus={() =>
-                                            onboardingStore.getProvincesData()
-                                        }
                                         renderOption={(props, option) => (
                                             <li {...props}>{option}</li>
                                         )}
@@ -497,13 +519,13 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                                                 "city",
                                                 v || ""
                                             );
+                                            onboardingStore.getDistrictsData(
+                                                String(v || "")
+                                            );
                                         }}
                                         disablePortal
                                         defaultChecked={false}
                                         options={cities()}
-                                        onFocus={() =>
-                                            onboardingStore.getCitiesData()
-                                        }
                                         renderOption={(props, option) => (
                                             <li {...props}>{option}</li>
                                         )}
@@ -540,7 +562,10 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                                     <Autocomplete
                                         id="district-autocomplete"
                                         value={
-                                            formikAddress.values.district != ""
+                                            formikAddress.values.district !=
+                                                "" &&
+                                            formikAddress.values.district !=
+                                                undefined
                                                 ? formikAddress.values.district
                                                 : null
                                         }
@@ -553,9 +578,6 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                                         }}
                                         disablePortal
                                         options={districts()}
-                                        onFocus={() =>
-                                            onboardingStore.getDistrictsData()
-                                        }
                                         renderOption={(props, option) => (
                                             <li {...props}>{option}</li>
                                         )}

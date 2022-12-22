@@ -88,6 +88,29 @@ const Accordion: FunctionComponent<Props> = (props) => {
         onboardingStore.getListStore();
     }, []);
 
+    const getlistStore = (channel_id: number) => {
+        return onboardingStore.listStore.filter(
+            (value) => value.channel_id == channel_id
+        );
+    };
+
+    const handleOnClickDelete = (store_id: number) => {
+        onboardingStore.deleteSyncStore(store_id);
+    };
+
+    const handleOnCLickConnectButton = (
+        event: React.MouseEvent<HTMLButtonElement>,
+        channel_id: number
+    ) => {
+        event.stopPropagation();
+        setChannelId(channel_id);
+        setOpen(true);
+    };
+
+    const handleOnClose = () => {
+        setOpen(false);
+    };
+
     const channels: MarketplaceType[] = [
         {
             channel_name: "bukalapak",
@@ -237,7 +260,7 @@ const Accordion: FunctionComponent<Props> = (props) => {
             channel_id: 131072,
             image: WoocommerceFullIcon,
             titleElement: <WoocommerceDialogTitle />,
-            content: <WoocommerceDialogContent />,
+            content: <WoocommerceDialogContent onClose={handleOnClose} />,
             actionContent: <WoocommerceDialogActionContent />,
         },
         {
@@ -249,45 +272,6 @@ const Accordion: FunctionComponent<Props> = (props) => {
             actionContent: <>shopify</>,
         },
     ];
-
-    const getMarketplacesByType = (): ObjectData => {
-        switch (type) {
-            case "channel":
-                return channels;
-            case "pos":
-                return poss;
-            case "webstore":
-                return webstores;
-            default:
-                return {};
-        }
-    };
-
-    const marketPlaces = getMarketplacesByType();
-
-    const getlistStore = (channel_id: number) => {
-        return onboardingStore.listStore.filter(
-            (value) => value.channel_id == channel_id
-        );
-    };
-
-    const handleOnClickDelete = (store_id: number) => {
-        alert(`"delete store ${store_id}"`);
-    };
-
-    const handleOnCLickConnectButton = (
-        event: React.MouseEvent<HTMLButtonElement>,
-        channel_id: number
-    ) => {
-        event.stopPropagation();
-        setChannelId(channel_id);
-        setOpen(true);
-        console.log("on click connect button");
-    };
-
-    const handleOnClose = () => {
-        setOpen(false);
-    };
 
     const getDialogData = (): MarketplaceType | undefined => {
         switch (type) {
@@ -304,8 +288,23 @@ const Accordion: FunctionComponent<Props> = (props) => {
         }
     };
 
+    const getMarketplacesByType = (): ObjectData => {
+        switch (type) {
+            case "channel":
+                return channels;
+            case "pos":
+                return poss;
+            case "webstore":
+                return webstores;
+            default:
+                return {};
+        }
+    };
+
+    const marketPlaces = getMarketplacesByType();
+
     const dialogData = getDialogData();
-    console.log(dialogData);
+
     return (
         <Box>
             {marketPlaces.map((value: MarketplaceType) => (
@@ -372,6 +371,9 @@ const Accordion: FunctionComponent<Props> = (props) => {
                                                         <TableCell>
                                                             <DeleteOutline
                                                                 color="error"
+                                                                sx={{
+                                                                    cursor: "pointer",
+                                                                }}
                                                                 onClick={() =>
                                                                     handleOnClickDelete(
                                                                         row.store_id

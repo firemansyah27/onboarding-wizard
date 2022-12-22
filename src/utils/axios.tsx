@@ -1,123 +1,130 @@
 import axios, { AxiosRequestConfig } from "axios";
 
 interface ObjectType {
-  [key: string]: any;
+    [key: string]: any;
 }
 
-export async function apiPost(url: string, data: ObjectType) {
-  const config = {
-    method: "POST",
-    url: url,
-    data: data,
-    header: {
-      "Content-Type": "application/json",
-    },
-  };
+type Destination = "onboarding" | "core";
 
-  const request = await axios(config)
-    .then((response) => {
-      return response.data;
-    })
-    .catch((e) => {
-      try {
-        return e.response.data;
-      } catch {
-        return "Something went wrong : 500";
-      }
-    });
+const urls = {
+    onboarding: process.env.REACT_APP_ONBOARDING_URL,
+    core: process.env.REACT_APP_CORE_URL,
+};
 
-  return request;
+export async function apiPost(
+    destination: Destination,
+    path: string,
+    data: ObjectType,
+    headers: ObjectType
+) {
+    const config = {
+        method: "POST",
+        url: `${urls[destination]}${path}`,
+        data: data,
+        headers,
+    };
+
+    const request = await axios(config)
+        .then((response) => {
+            return { status: response.status, data: response.data };
+        })
+        .catch((e) => {
+            try {
+                return { status: e.response.status, data: e.response.data };
+            } catch {
+                return { status: 500, data: "Something went wrong : 500" };
+            }
+        });
+
+    return request;
 }
 
 export async function apiGet(
-  url: string,
-  data: ObjectType,
-  username: string = "",
-  password: string = ""
+    destination: Destination,
+    path: string,
+    headers: ObjectType,
+    data?: ObjectType,
+    username?: string,
+    password?: string
 ) {
-  let request = null;
-  try {
-    const headers = {};
     const config: AxiosRequestConfig<any> = {
-      method: "GET",
-      url,
-      headers,
-      params: data,
+        method: "GET",
+        url: `${urls[destination]}${path}`,
+        headers,
+        params: data,
     };
     if (username && password) {
-      config.auth = { username, password };
+        config.auth = { username, password };
     }
-    request = await axios(config)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((e) => {
-        try {
-          return e.response.data;
-        } catch {
-          return {
-            status: false,
-            data: "Something went wrong : 500",
-          };
-        }
-      });
+    const request = await axios(config)
+        .then((response) => {
+            return { status: response.status, data: response.data };
+        })
+        .catch((e) => {
+            try {
+                return { status: e.response.status, data: e.response.data };
+            } catch {
+                return { status: 500, data: "Something went wrong : 500" };
+            }
+        });
     return request;
-  } catch (e) {
-    return { status: false, data: e };
-  }
 }
 
-export async function apiPut(url: string, data: ObjectType) {
-  let request = null;
-  try {
-    const headers = {
-      "Content-Type": "application/json",
-    };
-    const config: AxiosRequestConfig<any> = {
-      headers,
-    };
+export async function apiPut(
+    destination: Destination,
+    path: string,
+    data: ObjectType
+) {
+    let request = null;
+    try {
+        const headers = {
+            "Content-Type": "application/json",
+        };
+        const config: AxiosRequestConfig<any> = {
+            headers,
+        };
 
-    request = await axios
-      .put(url, data, config)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((e) => {
-        try {
-          return e.response.data;
-        } catch {
-          return {
-            status: false,
-            data: "Something went wrong : 500",
-          };
-        }
-      });
-    return request;
-  } catch (e) {
-    return { status: false, data: e };
-  }
+        request = await axios
+            .put(`${urls[destination]}${path}`, data, config)
+            .then((response) => {
+                return response.data;
+            })
+            .catch((e) => {
+                try {
+                    return e.response.data;
+                } catch {
+                    return {
+                        status: false,
+                        data: "Something went wrong : 500",
+                    };
+                }
+            });
+        return request;
+    } catch (e) {
+        return { status: false, data: e };
+    }
 }
 
-export async function apiDelete(url: string) {
-  let request = null;
-  try {
-    request = await axios
-      .delete(url)
-      .then((response) => {
-        return response.data;
-      })
-      .catch((e) => {
-        try {
-          return e.response.data;
-        } catch {
-          return {
-            status: false,
-            data: "Something went wrong : 500",
-          };
-        }
-      });
-    return request;
-  } catch (e) {
-    return { status: false, data: e };
-  }
+export async function apiDelete(destination: Destination, path: string) {
+    let request = null;
+    try {
+        request = await axios
+            .delete(`${urls[destination]}${path}`)
+            .then((response) => {
+                return response.data;
+            })
+            .catch((e) => {
+                try {
+                    return e.response.data;
+                } catch {
+                    return {
+                        status: false,
+                        data: "Something went wrong : 500",
+                    };
+                }
+            });
+        return request;
+    } catch (e) {
+        return { status: false, data: e };
+    }
 }
