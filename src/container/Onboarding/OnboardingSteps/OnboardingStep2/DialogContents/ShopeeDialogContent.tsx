@@ -47,9 +47,9 @@ export const ShopeeDialogActionContent: React.FunctionComponent<ContentProps> =
 
         const handleOnClick = async () => {
             onClose();
-            onboardingStore.startLoading();
-            await onboardingStore.generateLinkShopee();
-            onboardingStore.finishedLoading();
+            const url = await onboardingStore.generateLinkShopee();
+            onboardingStore.setUrlNewWindow(url);
+            onboardingStore.setOpenNewWindow();
         };
 
         return (

@@ -107,6 +107,8 @@ export class OnboardingStore {
     image: File[] = [];
     imageUrl: string = "";
     listStore: ObjectData[] = [];
+    openNewWindow: boolean = false;
+    urlNewWindow: string = "";
 
     constructor() {
         makeObservable(this, {
@@ -142,6 +144,10 @@ export class OnboardingStore {
             authenticateUser: action,
             connectWoocommerce: action,
             connectBukalapak: action,
+            openNewWindow: observable,
+            urlNewWindow: observable,
+            setUrlNewWindow: action,
+            setOpenNewWindow: action,
         });
     }
 
@@ -514,12 +520,11 @@ export class OnboardingStore {
 
         const res = await apiGet(
             "core",
-            "/shopee/authorize?state_url=http://localhost:3000",
+            "/shopee/authorize?state_url=http://localhost:3000/closewindow",
             headers
         );
         if (isResponseSuccess(res.status)) {
-            window.location.replace(res.data.url);
-            return;
+            return res.data.url;
         }
         Swal.fire("Failed!", res.data.error, "error");
     };
@@ -558,5 +563,14 @@ export class OnboardingStore {
             return;
         }
         Swal.fire("Failed!", res.data.error, "error");
+    };
+
+    setOpenNewWindow = () => {
+        this.openNewWindow = !this.openNewWindow;
+        console.log(this.openNewWindow);
+    };
+
+    setUrlNewWindow = (url: string) => {
+        this.urlNewWindow = url;
     };
 }

@@ -5,9 +5,15 @@ import styles from "./OnboardingStep2.module.scss";
 import { useSearchParams } from "react-router-dom";
 import { observer } from "mobx-react";
 import StoreContext from "../../../../stores";
+import NewWindow from "react-new-window";
 
 interface Props {
     submitRef2?: React.LegacyRef<HTMLButtonElement> | undefined;
+}
+
+interface CustomNewWindowProps {
+    url: string;
+    onUnload: () => void;
 }
 
 const OnboardingStep2: React.FunctionComponent<Props> = ({ submitRef2 }) => {
@@ -20,6 +26,18 @@ const OnboardingStep2: React.FunctionComponent<Props> = ({ submitRef2 }) => {
         }
     }, []);
 
+    const CustomNewWindow: React.FunctionComponent<CustomNewWindowProps> = ({
+        url,
+        onUnload,
+    }) => {
+        return <NewWindow url={url} name={"closewindow"} onUnload={onUnload} />;
+    };
+
+    const handleOnUnload = async () => {
+        onboardingStore.getListStore();
+        onboardingStore.setOpenNewWindow();
+    };
+
     return (
         <Box className={styles.step1Container}>
             <Typography className={styles.title}>Integrasi Channel</Typography>
@@ -29,6 +47,12 @@ const OnboardingStep2: React.FunctionComponent<Props> = ({ submitRef2 }) => {
             </Typography>
             <Divider sx={{ my: 2 }} />
             <CustomTabs />
+            {onboardingStore.openNewWindow && (
+                <CustomNewWindow
+                    url={onboardingStore.urlNewWindow}
+                    onUnload={handleOnUnload}
+                />
+            )}
         </Box>
     );
 };
