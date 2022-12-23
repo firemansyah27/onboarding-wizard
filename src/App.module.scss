@@ -1,0 +1,48 @@
+.dialogTitle {
+    font-family: "Nunito Sans" !important;
+    font-style: normal !important;
+    font-weight: 700 !important;
+    font-size: 30px !important;
+    line-height: 41px !important;
+    display: flex !important;
+    align-items: center !important;
+    text-align: center !important;
+    color: #163a50 !important;
+    margin-bottom: 20px !important;
+}
+
+.dialogDescription {
+    font-family: "Nunito Sans" !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    font-size: 14px !important;
+    line-height: 19px !important;
+    display: flex !important;
+    align-items: center !important;
+    text-align: center !important;
+    color: #163a50 !important;
+    padding-left: 50px !important;
+    padding-right: 50px !important;
+}
+
+.dialogButton {
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 10.5px 16px !important;
+    gap: 8px !important;
+    min-width: 136px !important;
+    min-height: 35px !important;
+    background: #4b68ef !important;
+    border-radius: 8px !important;
+    font-family: "Nunito Sans" !important;
+    font-style: normal !important;
+    font-weight: 400 !important;
+    font-size: 12px !important;
+    line-height: 16px !important;
+    color: #ffffff !important;
+    flex: none !important;
+    order: 0 !important;
+    flex-grow: 0 !important;
+    margin-top: 50px !important;
+    margin-bottom: 50px !important;
+}

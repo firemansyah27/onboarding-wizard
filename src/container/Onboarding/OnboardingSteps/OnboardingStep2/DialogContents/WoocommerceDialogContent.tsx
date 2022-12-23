@@ -55,9 +55,11 @@ export const WoocommerceDialogContent: React.FunctionComponent<
             is_use_custom_order_status: false,
         },
         validationSchema: validationSchema,
-        onSubmit: (values) => {
+        onSubmit: async (values) => {
             onClose();
-            onboardingStore.connectWoocommerce(values);
+            onboardingStore.startLoading();
+            await onboardingStore.connectWoocommerce(values);
+            onboardingStore.finishedLoading();
         },
     });
     return (

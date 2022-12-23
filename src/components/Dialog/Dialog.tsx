@@ -19,7 +19,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 export interface DialogTitleProps {
     id: string;
     children?: React.ReactNode;
-    onClose: () => void;
+    onClose?: () => void;
 }
 
 const BootstrapDialogTitle: React.FunctionComponent<DialogTitleProps> = (
@@ -52,7 +52,8 @@ export interface CustomDialogProps extends DialogProps {
     titleElement: ReactElement | undefined;
     content: ReactElement | undefined;
     actionContent: ReactElement | undefined;
-    onClose: () => void;
+    onClose?: () => void;
+    dividers?: boolean;
 }
 
 const CustomDialogs: React.FunctionComponent<CustomDialogProps> = (props) => {
@@ -62,8 +63,10 @@ const CustomDialogs: React.FunctionComponent<CustomDialogProps> = (props) => {
         content,
         actionContent,
         onClose,
+        dividers,
         ...properties
     } = props;
+
     return (
         <div>
             <BootstrapDialog
@@ -73,7 +76,7 @@ const CustomDialogs: React.FunctionComponent<CustomDialogProps> = (props) => {
                 open={open}
                 PaperProps={{
                     style: {
-                        borderRadius: 15,
+                        borderRadius: 10,
                     },
                 }}
             >
@@ -83,11 +86,12 @@ const CustomDialogs: React.FunctionComponent<CustomDialogProps> = (props) => {
                 >
                     {titleElement}
                 </BootstrapDialogTitle>
-                <DialogContent dividers>{content}</DialogContent>
+                <DialogContent dividers={dividers}>{content}</DialogContent>
                 <DialogActions>{actionContent}</DialogActions>
             </BootstrapDialog>
         </div>
     );
 };
 
+CustomDialogs.defaultProps = { dividers: true };
 export default CustomDialogs;

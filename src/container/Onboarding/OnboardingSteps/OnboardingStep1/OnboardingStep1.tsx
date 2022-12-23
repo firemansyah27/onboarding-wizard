@@ -52,7 +52,6 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
 
     useEffect(() => {
         if (needGetData()) {
-            onboardingStore.getProfileData();
             onboardingStore.getAccountingSetting();
         }
     }, []);
@@ -81,7 +80,9 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
     };
 
     const handleSubmiStep1Data = async () => {
+        onboardingStore.startLoading();
         await onboardingStore.saveProfileData();
+        onboardingStore.finishedLoading();
     };
 
     const validationSchemaProfile = yup.object({

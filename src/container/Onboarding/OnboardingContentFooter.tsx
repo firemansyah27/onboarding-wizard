@@ -48,7 +48,9 @@ const OnboardingContentFooter: React.FunctionComponent<Props> = ({
             case 0:
                 showToolTip = isShowTooltipStep1();
                 break;
-
+            case 1:
+                showToolTip = isShowTooltipStep2();
+                break;
             default:
                 break;
         }
@@ -78,6 +80,10 @@ const OnboardingContentFooter: React.FunctionComponent<Props> = ({
         }
 
         return showToolTip || imageUrl === "";
+    };
+
+    const isShowTooltipStep2 = (): boolean => {
+        return onboardingStore.listStore.length === 0;
     };
 
     const handleClose = () => {

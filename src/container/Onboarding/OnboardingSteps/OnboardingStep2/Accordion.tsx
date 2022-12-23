@@ -94,8 +94,10 @@ const Accordion: FunctionComponent<Props> = (props) => {
         );
     };
 
-    const handleOnClickDelete = (store_id: number) => {
-        onboardingStore.deleteSyncStore(store_id);
+    const handleOnClickDelete = async (store_id: number) => {
+        onboardingStore.startLoading();
+        await onboardingStore.deleteSyncStore(store_id);
+        onboardingStore.finishedLoading();
     };
 
     const handleOnCLickConnectButton = (
@@ -118,7 +120,9 @@ const Accordion: FunctionComponent<Props> = (props) => {
             image: BukalapakFullIcon,
             titleElement: <BukalapakDialogTitle />,
             content: <BukalapakDialogContent />,
-            actionContent: <BukalapakDialogActionContent />,
+            actionContent: (
+                <BukalapakDialogActionContent onClose={handleOnClose} />
+            ),
         },
         {
             channel_name: "lazada",
@@ -158,7 +162,9 @@ const Accordion: FunctionComponent<Props> = (props) => {
             image: ShopeeFullIcon,
             titleElement: <ShopeeDialogTitle />,
             content: <ShopeeDialogContent />,
-            actionContent: <ShopeeDialogActionContent />,
+            actionContent: (
+                <ShopeeDialogActionContent onClose={handleOnClose} />
+            ),
         },
         {
             channel_name: "tokopedia",

@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Typography, Box, Link, Button } from "@mui/material";
 import BukalapakFullIcon from "../../../../../assets/bukalapak-full.png";
 import styles from "./BukalapakDialogContent.module.scss";
+import { observer } from "mobx-react";
+import StoreContext from "../../../../../stores";
 
 export const BukalapakDialogTitle = () => {
     return (
@@ -46,36 +48,46 @@ export const BukalapakDialogContent = () => {
     );
 };
 
-export const BukalapakDialogActionContent = () => {
-    const handleOnClick = () => {
-        alert("generate link bukalapak");
-    };
+export interface ContentProps {
+    onClose: () => void;
+}
 
-    return (
-        <Box
-            sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                width: "100%",
-                p: 2,
-            }}
-        >
-            <Link
-                className={styles.actionContentText}
-                rel="noopener noreferrer"
-                target="_blank"
-                href="https://edu.jubelio.com/documentation/menu-integrasi/integrasi-channel-penjualan-ke-jubelio/cara-integrasi-bukalapak-ke-jubelio/"
+export const BukalapakDialogActionContent: React.FunctionComponent<ContentProps> =
+    observer(({ onClose }) => {
+        const { onboardingStore } = useContext(StoreContext);
+
+        const handleOnClick = async () => {
+            onClose();
+            onboardingStore.finishedLoading();
+            await onboardingStore.generateLinkBukalapak();
+            onboardingStore.finishedLoading();
+        };
+
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                    p: 2,
+                }}
             >
-                Panduan Integrasi Jubelio ke Bukalapak
-            </Link>
-            <Button
-                sx={{ textTransform: "none" }}
-                variant="contained"
-                color="primary"
-                onClick={handleOnClick}
-            >
-                Sambungkan
-            </Button>
-        </Box>
-    );
-};
+                <Link
+                    className={styles.actionContentText}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    href="https://edu.jubelio.com/documentation/menu-integrasi/integrasi-channel-penjualan-ke-jubelio/cara-integrasi-bukalapak-ke-jubelio/"
+                >
+                    Panduan Integrasi Jubelio ke Bukalapak
+                </Link>
+                <Button
+                    sx={{ textTransform: "none" }}
+                    variant="contained"
+                    color="primary"
+                    onClick={handleOnClick}
+                >
+                    Sambungkan
+                </Button>
+            </Box>
+        );
+    });

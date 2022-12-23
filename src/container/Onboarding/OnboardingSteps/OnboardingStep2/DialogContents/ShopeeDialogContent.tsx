@@ -4,7 +4,6 @@ import ShopeeFullIcon from "../../../../../assets/shopee-full.png";
 import styles from "./ShopeeDialogContent.module.scss";
 import { observer } from "mobx-react";
 import StoreContext from "../../../../../stores";
-import { observe } from "mobx";
 
 export const ShopeeDialogTitle = () => {
     return (
@@ -39,38 +38,45 @@ export const ShopeeDialogContent = () => {
     );
 };
 
-export const ShopeeDialogActionContent = observer(() => {
-    const { onboardingStore } = useContext(StoreContext);
+export interface ContentProps {
+    onClose: () => void;
+}
+export const ShopeeDialogActionContent: React.FunctionComponent<ContentProps> =
+    observer(({ onClose }) => {
+        const { onboardingStore } = useContext(StoreContext);
 
-    const handleOnClick = () => {
-        onboardingStore.generateLinkShopee();
-    };
+        const handleOnClick = async () => {
+            onClose();
+            onboardingStore.startLoading();
+            await onboardingStore.generateLinkShopee();
+            onboardingStore.finishedLoading();
+        };
 
-    return (
-        <Box
-            sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                width: "100%",
-                p: 2,
-            }}
-        >
-            <Link
-                className={styles.actionContentText}
-                rel="noopener noreferrer"
-                target="_blank"
-                href="https://edu.jubelio.com/documentation/menu-integrasi/integrasi-channel-penjualan-ke-jubelio/cara-integrasi-shopee-ke-jubelio/"
+        return (
+            <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    width: "100%",
+                    p: 2,
+                }}
             >
-                Panduan Integrasi Jubelio ke Shopee
-            </Link>
-            <Button
-                sx={{ textTransform: "none" }}
-                variant="contained"
-                color="primary"
-                onClick={handleOnClick}
-            >
-                Sambungkan
-            </Button>
-        </Box>
-    );
-});
+                <Link
+                    className={styles.actionContentText}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    href="https://edu.jubelio.com/documentation/menu-integrasi/integrasi-channel-penjualan-ke-jubelio/cara-integrasi-shopee-ke-jubelio/"
+                >
+                    Panduan Integrasi Jubelio ke Shopee
+                </Link>
+                <Button
+                    sx={{ textTransform: "none" }}
+                    variant="contained"
+                    color="primary"
+                    onClick={handleOnClick}
+                >
+                    Sambungkan
+                </Button>
+            </Box>
+        );
+    });

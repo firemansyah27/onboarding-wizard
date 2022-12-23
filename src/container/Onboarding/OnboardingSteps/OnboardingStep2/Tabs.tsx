@@ -43,32 +43,6 @@ const CustomTabs = () => {
     const indexTab1 = 0;
     const indexTab2 = 1;
     const indexTab3 = 2;
-    const channels = [
-        {
-            bukalapak: 2,
-            lazada: 4,
-            zalora: 8,
-            elevenia: 16,
-            blibli: 32,
-            shopee: 64,
-            tokopedia: 128,
-            zilingo: 2048,
-            jd: 4096,
-            instagram: 16385,
-            facebook: 16386,
-            woocommerce: 131072,
-            dealpos: 262144,
-            jubelio_pos: 524288,
-            shopify: 1048576,
-            akulaku: 65536,
-            tiktok: 131076,
-            tada: 131077,
-            evermos: 131078,
-        },
-    ];
-
-    const pointOfSales = [{}];
-    const webstores = [{}];
 
     return (
         <Box sx={{ width: "100%" }}>

@@ -1,12 +1,4 @@
-import {
-    makeObservable,
-    action,
-    runInAction,
-    observable,
-    extendObservable,
-    makeAutoObservable,
-    toJS,
-} from "mobx";
+import { makeObservable, action, runInAction, observable } from "mobx";
 import Swal from "sweetalert2";
 import { number } from "yup";
 import {
@@ -21,6 +13,7 @@ import {
     getToken,
 } from "../../utils";
 import { isEqual } from "lodash";
+
 interface ProfileData {
     company_name: string | null;
     website: string | null;
@@ -67,6 +60,7 @@ const token = getToken("jwtToken");
 export class OnboardingStore {
     isLoading: boolean = false;
     activeStep: number = 0;
+    lastOnboardingStep: number = 0;
     onboardingLastModified: string = "";
     profileData: ProfileData = {
         company_name: "",
@@ -119,7 +113,10 @@ export class OnboardingStore {
             isLoading: observable,
             startLoading: action,
             finishedLoading: action,
+            wipeData: action,
             activeStep: observable,
+            lastOnboardingStep: observable,
+            onboardingLastModified: observable,
             profileData: observable,
             getProfileData: action,
             saveProfileData: action,
@@ -144,6 +141,7 @@ export class OnboardingStore {
             previousStep: action,
             authenticateUser: action,
             connectWoocommerce: action,
+            connectBukalapak: action,
         });
     }
 
@@ -153,6 +151,20 @@ export class OnboardingStore {
 
     finishedLoading = () => {
         this.isLoading = false;
+    };
+
+    wipeData = async () => {
+        const headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        };
+        const res = await apiPost(
+            "onboarding",
+            "/tenant/wipe-data",
+            {},
+            headers
+        );
+        return res;
     };
 
     authenticateUser = async (data: any) => {
@@ -168,7 +180,6 @@ export class OnboardingStore {
     };
 
     getProfileData = async () => {
-        this.startLoading();
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -181,17 +192,13 @@ export class OnboardingStore {
                 this.profileDataHelper = formattedData;
                 this.imageUrl = formattedData.logo_url;
                 this.address = concatAdressValue(formattedData);
-                this.finishedLoading();
             });
-            this.finishedLoading();
             return this.profileData;
         }
-        this.finishedLoading();
         Swal.fire("Failed!", res.data.error, "error");
     };
 
     saveProfileData = async () => {
-        this.startLoading();
         if (
             !isEqual(this.profileData, this.profileDataHelper) ||
             this.image[0]
@@ -231,7 +238,6 @@ export class OnboardingStore {
                 headers
             );
             if (!isResponseSuccess(res.status)) {
-                this.finishedLoading();
                 Swal.fire("Failed!", res.data.error, "error");
                 return;
             }
@@ -256,14 +262,39 @@ export class OnboardingStore {
             );
 
             if (isResponseSuccess(res.status)) {
+                return;
+            } else {
+                Swal.fire("Failed!", res.data.error, "error");
+                return;
+            }
+        }
+        if (this.lastOnboardingStep === 0) {
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            };
+            const data = {
+                lastOnboardingStep: `${this.lastOnboardingStep}`,
+                onboardingLastModified: this.onboardingLastModified,
+                increaseOrDecreaseStep: "INCREASE",
+            };
+
+            const res = await apiPost(
+                "onboarding",
+                "/wizard/update-step",
+                data,
+                headers
+            );
+
+            if (isResponseSuccess(res.status)) {
                 this.nextStep();
-                this.finishedLoading();
                 return;
             }
             Swal.fire("Failed!", res.data.error, "error");
+            return;
         }
+
         this.nextStep();
-        this.finishedLoading();
     };
 
     getProvincesData = async () => {
@@ -397,6 +428,7 @@ export class OnboardingStore {
         if (isResponseSuccess(res.status)) {
             runInAction(() => {
                 this.activeStep = res.data.lastOnboardingStep;
+                this.lastOnboardingStep = res.data.lastOnboardingStep;
                 this.onboardingLastModified = res.data.onboardingLastModified;
             });
             return;
@@ -424,7 +456,6 @@ export class OnboardingStore {
     };
 
     deleteSyncStore = async (store_id: number) => {
-        this.startLoading();
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -437,15 +468,12 @@ export class OnboardingStore {
         );
         if (isResponseSuccess(res.status)) {
             await this.getListStore();
-            this.finishedLoading();
             return;
         }
-        this.finishedLoading();
         Swal.fire("Failed!", res.data.error, "error");
     };
 
     connectWoocommerce = async (data: ObjectData) => {
-        this.startLoading();
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -458,15 +486,12 @@ export class OnboardingStore {
         );
         if (isResponseSuccess(res.status)) {
             await this.getListStore();
-            this.finishedLoading();
             return;
         }
-        this.finishedLoading();
         Swal.fire("Failed!", res.data.error, "error");
     };
 
     generateLinkShopee = async () => {
-        this.startLoading();
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -478,16 +503,18 @@ export class OnboardingStore {
             headers
         );
         if (isResponseSuccess(res.status)) {
-            this.finishedLoading();
-            window.location.replace(res.data.url);
+            // window.location.replace(res.data.url);
+            window.open(
+                res.data.url,
+                "sharer",
+                "toolbar=0,status=0,width=600,height=800"
+            );
             return;
         }
-        this.finishedLoading();
         Swal.fire("Failed!", res.data.error, "error");
     };
 
     generateLinkBukalapak = async () => {
-        this.startLoading();
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -495,11 +522,31 @@ export class OnboardingStore {
 
         const res = await apiGet("core", "/bukalapak/authorize-url", headers);
         if (isResponseSuccess(res.status)) {
-            this.finishedLoading();
             window.location.replace(res.data.url);
             return;
         }
-        this.finishedLoading();
+        Swal.fire("Failed!", res.data.error, "error");
+    };
+
+    connectBukalapak = async (auth_code: string) => {
+        const headers = {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        };
+        const data = {
+            isNext: true,
+            code: `${auth_code}`,
+        };
+        const res = await apiPost(
+            "core",
+            "/bukalapak/authorize",
+            data,
+            headers
+        );
+        if (isResponseSuccess(res.status)) {
+            await this.getListStore();
+            return;
+        }
         Swal.fire("Failed!", res.data.error, "error");
     };
 }

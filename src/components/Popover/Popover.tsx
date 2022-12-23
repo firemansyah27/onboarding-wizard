@@ -1,9 +1,9 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import Popover from "@mui/material/Popover";
 import Box from "@mui/material/Box";
 import styles from "./Popover.module.scss";
-import PopoverContent1 from "./Content/PopoverContent1";
-PopoverContent1;
+import PopoverContent1 from "./Content/PopoverContent";
+
 interface Props {
     onClose: () => void;
     childNode: HTMLElement | null;
@@ -15,8 +15,6 @@ const BasicPopover: React.FunctionComponent<Props> = ({
 }) => {
     const open = Boolean(childNode);
     const id = open ? "simple-popover" : undefined;
-
-    const contents = [<PopoverContent1 key="Popover-content-1" />];
 
     return (
         <Popover
@@ -46,7 +44,7 @@ const BasicPopover: React.FunctionComponent<Props> = ({
                 className={styles.MuiPopoverPaper}
                 sx={{ backgroundColor: "primary.main", borderRadius: 3 }}
             >
-                {contents[0]}
+                <PopoverContent1 key="Popover-content-1" />
             </Box>
             <Box
                 sx={{
