@@ -184,14 +184,21 @@ export class OnboardingStore {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         };
-        const res = await apiGet("core", "/systemsetting/profile", headers);
+        const res = await apiGet("bff", "/systemsetting/profile", headers);
         if (isResponseSuccess(res.status)) {
             runInAction(() => {
-                const formattedData = convertNullToEmptyString(res.data);
+                const formattedData = convertNullToEmptyString(
+                    res.data.profile_setting
+                );
                 this.profileData = formattedData;
                 this.profileDataHelper = formattedData;
                 this.imageUrl = formattedData.logo_url;
                 this.address = concatAdressValue(formattedData);
+
+                const accountingSetting =
+                    res?.data?.accounting_setting?.setup?.use_accounting;
+                this.accountingSetting = accountingSetting.toString();
+                this.accountingSettingHelper = accountingSetting.toString();
             });
             return this.profileData;
         }
@@ -503,12 +510,12 @@ export class OnboardingStore {
             headers
         );
         if (isResponseSuccess(res.status)) {
-            // window.location.replace(res.data.url);
-            window.open(
-                res.data.url,
-                "sharer",
-                "toolbar=0,status=0,width=600,height=800"
-            );
+            window.location.replace(res.data.url);
+            // window.open(
+            //     res.data.url,
+            //     "sharer",
+            //     "toolbar=0,status=0,width=600,height=800"
+            // );
             return;
         }
         Swal.fire("Failed!", res.data.error, "error");

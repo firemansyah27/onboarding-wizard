@@ -50,16 +50,6 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
     const [open, setOpen] = useState(false);
     const { onboardingStore } = useContext(StoreContext);
 
-    useEffect(() => {
-        if (needGetData()) {
-            onboardingStore.getAccountingSetting();
-        }
-    }, []);
-
-    const needGetData = () => {
-        return onboardingStore.profileData.company_name === "";
-    };
-
     const handleChangeAccounting = (
         event: React.ChangeEvent<HTMLInputElement>
     ) => {

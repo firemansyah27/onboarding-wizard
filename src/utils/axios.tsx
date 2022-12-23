@@ -4,11 +4,12 @@ interface ObjectType {
     [key: string]: any;
 }
 
-type Destination = "onboarding" | "core";
+type Destination = "onboarding" | "core" | "bff";
 
 const urls = {
     onboarding: process.env.REACT_APP_ONBOARDING_URL,
     core: process.env.REACT_APP_CORE_URL,
+    bff: process.env.REACT_APP_BFF_URL,
 };
 
 export async function apiPost(

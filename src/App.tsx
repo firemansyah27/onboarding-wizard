@@ -57,8 +57,8 @@ function App() {
                 email: "rickrkop25@gmail.com",
                 password: "Jadipedagang27!",
             });
+            onboardingStore.getCurrentStep();
             await onboardingStore.getProfileData();
-            await onboardingStore.getCurrentStep();
             if (
                 onboardingStore.activeStep === 0 &&
                 onboardingStore.profileData.company_name === ""
@@ -66,10 +66,8 @@ function App() {
                 onboardingStore.startLoading();
                 const res = await onboardingStore.wipeData();
                 if (isResponseSuccess(res.status)) {
-                    onboardingStore.finishedLoading();
                     setOpen(true);
                 } else {
-                    onboardingStore.finishedLoading();
                     Swal.fire("Failed!", res.data.error, "error");
                 }
             }
@@ -101,7 +99,7 @@ function App() {
                 </div>
             </div>
 
-            <Backdrop
+            {/* <Backdrop
                 sx={{
                     color: "#fff",
                     zIndex: (theme) => theme.zIndex.drawer + 1,
@@ -109,7 +107,7 @@ function App() {
                 open={onboardingStore.isLoading}
             >
                 <CircularProgress color="inherit" />
-            </Backdrop>
+            </Backdrop> */}
 
             <CustomDialogs
                 open={open}
