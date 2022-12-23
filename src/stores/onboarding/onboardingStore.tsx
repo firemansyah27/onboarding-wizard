@@ -367,6 +367,14 @@ export class OnboardingStore {
         this.address = concatAdressValue(profileData);
     };
     setImage = (image: File) => {
+        const regex = new RegExp(/[^\s]+(.*?).(jpg|jpeg|png|JPG|JPEG|PNG)$/);
+        if (
+            image.size > 1024 * 1024 ||
+            !regex.test(image.name.toLocaleLowerCase())
+        ) {
+            Swal.fire("Failed!", "Maksimal 1mb. Format harus jpg/png", "error");
+            return;
+        }
         this.image[0] = image;
         this.imageUrl = URL.createObjectURL(image);
     };
@@ -511,11 +519,6 @@ export class OnboardingStore {
         );
         if (isResponseSuccess(res.status)) {
             window.location.replace(res.data.url);
-            // window.open(
-            //     res.data.url,
-            //     "sharer",
-            //     "toolbar=0,status=0,width=600,height=800"
-            // );
             return;
         }
         Swal.fire("Failed!", res.data.error, "error");
