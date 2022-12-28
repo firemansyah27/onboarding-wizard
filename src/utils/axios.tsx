@@ -22,6 +22,7 @@ export async function apiPost(
         method: "POST",
         url: `${urls[destination]}${path}`,
         data: data,
+        withCredentials: true,
         headers,
     };
 

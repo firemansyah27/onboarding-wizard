@@ -1,7 +1,9 @@
 import { apiDelete, apiGet, apiPost, apiPut } from "./axios";
-import { setToken, getToken, removeToken } from "./localStorage";
+import { getToken } from "./localStorage";
 import { isResponseSuccess } from "./http";
 import { concatAdressValue, convertNullToEmptyString } from "./utils";
+import { isAuthed } from "./authentication";
+
 export {
     apiDelete,
     apiGet,
@@ -9,8 +11,7 @@ export {
     apiPut,
     concatAdressValue,
     convertNullToEmptyString,
-    setToken,
     getToken,
-    removeToken,
     isResponseSuccess,
+    isAuthed,
 };

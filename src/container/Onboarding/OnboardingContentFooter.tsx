@@ -32,14 +32,29 @@ const OnboardingContentFooter: React.FunctionComponent<Props> = ({
         submitRef?.current?.click();
     };
 
-    const handleClickPrevious = (
+    const handleClickPrevious = async (
         event: React.MouseEvent<HTMLButtonElement>
     ) => {
         onboardingStore.previousStep();
+        onboardingStore.startLoading();
+        await getInitData();
+        onboardingStore.finishedLoading();
     };
 
     const showToolTip = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
+    };
+
+    const getInitData = async () => {
+        switch (onboardingStore.activeStep) {
+            case 0:
+                if (!onboardingStore.profileData.company_name) {
+                    await onboardingStore.getProfileData();
+                }
+                break;
+            default:
+                break;
+        }
     };
 
     const isShowTooltips = (): boolean => {

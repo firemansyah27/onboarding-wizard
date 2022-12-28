@@ -1,8 +1,6 @@
 import React, {
     FunctionComponent,
-    ReactNode,
     useContext,
-    useEffect,
     useState,
     ReactElement,
 } from "react";
@@ -83,10 +81,6 @@ const Accordion: FunctionComponent<Props> = (props) => {
     const [channelId, setChannelId] = useState(0);
 
     const { onboardingStore } = useContext(StoreContext);
-
-    useEffect(() => {
-        onboardingStore.getListStore();
-    }, []);
 
     const getlistStore = (channel_id: number) => {
         return onboardingStore.listStore.filter(

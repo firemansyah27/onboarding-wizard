@@ -9,10 +9,10 @@ import {
     concatAdressValue,
     convertNullToEmptyString,
     isResponseSuccess,
-    setToken,
     getToken,
 } from "../../utils";
 import { isEqual } from "lodash";
+import { makeId } from "../../utils/utils";
 
 interface ProfileData {
     company_name: string | null;
@@ -55,10 +55,8 @@ interface ObjectData {
 
 type AccountSetting = "0" | "1" | "2";
 
-const token = getToken("jwtToken");
-
 export class OnboardingStore {
-    isLoading: boolean = false;
+    isLoading: boolean = true;
     activeStep: number = 0;
     lastOnboardingStep: number = 0;
     onboardingLastModified: string = "";
@@ -160,6 +158,7 @@ export class OnboardingStore {
     };
 
     wipeData = async () => {
+        const token = getToken("jwtToken");
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -177,15 +176,15 @@ export class OnboardingStore {
         const headers = {
             "Content-Type": "application/json",
         };
-        const res = await apiPost("core", "/login", data, headers);
+        const res = await apiPost("bff", "/login", data, headers);
         if (isResponseSuccess(res.status)) {
-            setToken("jwtToken", res.data.token);
-            return;
+            return res.data;
         }
-        Swal.fire("Failed!", res.data.error, "error");
+        return res.data;
     };
 
     getProfileData = async () => {
+        const token = getToken("jwtToken");
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -196,6 +195,9 @@ export class OnboardingStore {
                 const formattedData = convertNullToEmptyString(
                     res.data.profile_setting
                 );
+                formattedData.logo_url = formattedData.logo_url
+                    ? `${formattedData.logo_url}?id=${makeId(7)}`
+                    : "";
                 this.profileData = formattedData;
                 this.profileDataHelper = formattedData;
                 this.imageUrl = formattedData.logo_url;
@@ -212,6 +214,7 @@ export class OnboardingStore {
     };
 
     saveProfileData = async () => {
+        const token = getToken("jwtToken");
         if (
             !isEqual(this.profileData, this.profileDataHelper) ||
             this.image[0]
@@ -275,7 +278,7 @@ export class OnboardingStore {
             );
 
             if (isResponseSuccess(res.status)) {
-                return;
+                this.accountingSettingHelper = this.accountingSetting;
             } else {
                 Swal.fire("Failed!", res.data.error, "error");
                 return;
@@ -306,11 +309,11 @@ export class OnboardingStore {
             Swal.fire("Failed!", res.data.error, "error");
             return;
         }
-
         this.nextStep();
     };
 
     getProvincesData = async () => {
+        const token = getToken("jwtToken");
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -326,6 +329,7 @@ export class OnboardingStore {
     };
 
     getCitiesData = async (province_name: string) => {
+        const token = getToken("jwtToken");
         const province = this.provincesData.find((v) => {
             return v.name === province_name;
         });
@@ -348,6 +352,7 @@ export class OnboardingStore {
     };
 
     getDistrictsData = async (city_name: string) => {
+        const token = getToken("jwtToken");
         const city = this.citiesData.find((v) => {
             return v.name === city_name;
         });
@@ -390,6 +395,7 @@ export class OnboardingStore {
     };
 
     getAccountingSetting = async () => {
+        const token = getToken("jwtToken");
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -437,6 +443,7 @@ export class OnboardingStore {
     };
 
     getCurrentStep = async () => {
+        const token = getToken("jwtToken");
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -458,6 +465,7 @@ export class OnboardingStore {
     };
 
     getListStore = async () => {
+        const token = getToken("jwtToken");
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -477,6 +485,7 @@ export class OnboardingStore {
     };
 
     deleteSyncStore = async (store_id: number) => {
+        const token = getToken("jwtToken");
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -495,6 +504,7 @@ export class OnboardingStore {
     };
 
     connectWoocommerce = async (data: ObjectData) => {
+        const token = getToken("jwtToken");
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -513,6 +523,7 @@ export class OnboardingStore {
     };
 
     generateLinkShopee = async () => {
+        const token = getToken("jwtToken");
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -530,6 +541,7 @@ export class OnboardingStore {
     };
 
     generateLinkBukalapak = async () => {
+        const token = getToken("jwtToken");
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -544,6 +556,7 @@ export class OnboardingStore {
     };
 
     connectBukalapak = async (auth_code: string) => {
+        const token = getToken("jwtToken");
         const headers = {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -567,7 +580,6 @@ export class OnboardingStore {
 
     setOpenNewWindow = () => {
         this.openNewWindow = !this.openNewWindow;
-        console.log(this.openNewWindow);
     };
 
     setUrlNewWindow = (url: string) => {

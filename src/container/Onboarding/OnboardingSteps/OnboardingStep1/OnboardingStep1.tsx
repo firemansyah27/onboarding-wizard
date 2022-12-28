@@ -35,17 +35,6 @@ interface Props {
     submitRef1?: React.LegacyRef<HTMLButtonElement> | undefined;
 }
 
-interface CompanyData {
-    company_name: string | null;
-    website: string | null;
-    npwp: string | null;
-}
-
-interface ProvincesData {
-    province_id: string;
-    name: string;
-}
-
 const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
     const [open, setOpen] = useState(false);
     const { onboardingStore } = useContext(StoreContext);
@@ -64,9 +53,7 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
 
     const handleClickOpen = async () => {
         setOpen(true);
-        await onboardingStore.getProvincesData();
-        await onboardingStore.getCitiesData(formikAddress.values.state || "");
-        await onboardingStore.getDistrictsData(formikAddress.values.city || "");
+        onboardingStore.getProvincesData();
     };
 
     const handleSubmiStep1Data = async () => {
@@ -460,6 +447,14 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                                             onboardingStore.getCitiesData(
                                                 v || ""
                                             );
+                                            formikAddress.setFieldValue(
+                                                "city",
+                                                null
+                                            );
+                                            formikAddress.setFieldValue(
+                                                "district",
+                                                null
+                                            );
                                         }}
                                         disablePortal
                                         options={provinces()}
@@ -513,10 +508,19 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                                             onboardingStore.getDistrictsData(
                                                 String(v || "")
                                             );
+                                            formikAddress.setFieldValue(
+                                                "district",
+                                                null
+                                            );
                                         }}
                                         disablePortal
                                         defaultChecked={false}
                                         options={cities()}
+                                        onFocus={() =>
+                                            onboardingStore.getCitiesData(
+                                                formikAddress.values.state || ""
+                                            )
+                                        }
                                         renderOption={(props, option) => (
                                             <li {...props}>{option}</li>
                                         )}
@@ -569,6 +573,11 @@ const OnboardingStep1: React.FunctionComponent<Props> = ({ submitRef1 }) => {
                                         }}
                                         disablePortal
                                         options={districts()}
+                                        onFocus={() =>
+                                            onboardingStore.getDistrictsData(
+                                                formikAddress.values.city || ""
+                                            )
+                                        }
                                         renderOption={(props, option) => (
                                             <li {...props}>{option}</li>
                                         )}

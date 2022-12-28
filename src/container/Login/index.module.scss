@@ -1,0 +1,36 @@
+.loginContainer {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 100vh !important;
+}
+
+.formCard {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 25px !important;
+    width: 18vw !important;
+    min-width: 230px !important;
+}
+
+.loginText {
+    text-align: center !important;
+    font-size: 2rem !important;
+    font-family: "Nunito Sans", sans-serif !important;
+    font-weight: 700 !important;
+}
+
+.loginInput {
+    margin-top: 25px !important;
+}
+
+.loginButton {
+    margin-top: 30px !important;
+}
+
+.loginError {
+    margin-top: 5px;
+    color: #df4d4d;
+    text-align: center;
+}

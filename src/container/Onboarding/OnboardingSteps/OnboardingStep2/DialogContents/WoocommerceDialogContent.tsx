@@ -1,18 +1,11 @@
 import React, { useContext } from "react";
-import {
-    Typography,
-    Box,
-    Link,
-    Button,
-    TextField,
-    Autocomplete,
-} from "@mui/material";
+import { Typography, Box, Link, TextField, Autocomplete } from "@mui/material";
 import WoocommerceFullIcon from "../../../../../assets/woocommerce-full.png";
 import styles from "./WoocommerceDialogContent.module.scss";
 import InputGrid from "../../../../../components/InputGrid/InputGrid";
 import { useFormik } from "formik";
 import StoreContext from "../../../../../stores";
-import { observer } from "mobx-react";
+import { CustomButton } from "../../../../../components/Button/Button";
 import * as yup from "yup";
 
 export const WoocommerceDialogTitle = () => {
@@ -56,10 +49,8 @@ export const WoocommerceDialogContent: React.FunctionComponent<
         },
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            onClose();
-            onboardingStore.startLoading();
             await onboardingStore.connectWoocommerce(values);
-            onboardingStore.finishedLoading();
+            onClose();
         },
     });
     return (
@@ -218,15 +209,14 @@ export const WoocommerceDialogActionContent = () => {
             >
                 Panduan Integrasi Jubelio ke Woocommerce
             </Link>
-            <Button
+            <CustomButton
                 sx={{ textTransform: "none" }}
                 form="woocommerce-form"
                 type="submit"
                 variant="contained"
                 color="primary"
-            >
-                Sambungkan
-            </Button>
+                name="Sambungkan"
+            />
         </Box>
     );
 };
